@@ -1,4 +1,4 @@
-# MarkAI Pro Deployment TODO
+ca# MarkAI Pro Deployment TODO
 
 ## Status: All pending [ ]
 
@@ -9,7 +9,11 @@
 - Create .env in markai-pro-api/ from .env.example (add your keys: OPENAI_API_KEY, STRIPE_SECRET_KEY, RESEND_API_KEY, DATABASE_URL from Railway Postgres, REDIS_URL)
 - npm run db:generate && npm run db:migrate (skip if no local DB)
 
-### 2. GitHub Repo Setup [IN PROGRESS]
+### 2. GitHub Repo Setup [COMPLETED]
+- ✓ git init
+- ✓ git add
+- ✓ git commit
+- ✓ remote origin added & pushed to https://github.com/anas9344375824-bit/MarkAI.git
 - git init (if needed)
 - git add . && git commit -m \"Deploy prep\"
 - Create GitHub repo 'markai-pro', git remote add origin https://github.com/[user]/markai-pro.git

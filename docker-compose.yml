@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ./markai-pro
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ./markai-pro-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./markai-pro-api/.env
+    depends_on:
+      - redis
+    command: sh -c "npx prisma migrate deploy && node dist/index.js"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
