@@ -22,7 +22,7 @@ const isHaramRequest = (message: string): boolean => {
 }
 
 // GET /api/seo/start — returns welcome message
-export const getSeoStartMessage = (_req: Request, res: Response): void => {
+export const getSeoStartMessage = async (_req: Request, res: Response): Promise<void> => {
   success(res, { message: SEO_START_MESSAGE })
 }
 
