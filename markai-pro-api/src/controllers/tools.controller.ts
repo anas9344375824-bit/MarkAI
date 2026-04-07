@@ -29,6 +29,15 @@ import * as funnel from '../services/ai/tools/funnelPlanner'
 import * as bvTrainer from '../services/ai/tools/brandVoiceTrainer'
 import * as calendar from '../services/ai/tools/contentCalendar'
 import * as reportGen from '../services/ai/tools/reportGenerator'
+import * as offPageSeo from '../services/ai/tools/offPageSeo'
+import * as technicalSeo from '../services/ai/tools/technicalSeo'
+import * as localSeo from '../services/ai/tools/localSeo'
+import * as ecommerceSeo from '../services/ai/tools/ecommerceSeo'
+import * as voiceSearchSeo from '../services/ai/tools/voiceSearchSeo'
+import * as imageSeo from '../services/ai/tools/imageSeo'
+import * as mobileSeo from '../services/ai/tools/mobileSeo'
+import * as internationalSeo from '../services/ai/tools/internationalSeo'
+import * as whiteHatChecker from '../services/ai/tools/whiteHatChecker'
 import { SEO_SYSTEM_PROMPT, buildSeoUserPrompt } from '../prompts/seo.prompt'
 import { ContentType, Platform } from '@prisma/client'
 
@@ -56,8 +65,17 @@ const TOOL_REGISTRY: Record<string, {
   funnel_planner: { system: funnel.SYSTEM_PROMPT, buildPrompt: (i) => funnel.buildUserPrompt(i as never), contentType: 'FUNNEL_MAP' },
   brand_voice_trainer: { system: bvTrainer.SYSTEM_PROMPT, buildPrompt: (i) => bvTrainer.buildUserPrompt(i as never), contentType: 'BRAND_VOICE_PROFILE' },
   content_calendar: { system: calendar.SYSTEM_PROMPT, buildPrompt: (i, bv) => calendar.buildUserPrompt(i as never, bv as never), contentType: 'CONTENT_CALENDAR' },
-  report_generator: { system: reportGen.SYSTEM_PROMPT, buildPrompt: (i) => reportGen.buildUserPrompt(i as never), contentType: 'ANALYTICS_REPORT' },
-  seo_assistant: { system: SEO_SYSTEM_PROMPT, buildPrompt: (i) => buildSeoUserPrompt(i as never), contentType: 'SEO_BRIEF' },
+  report_generator:    { system: reportGen.SYSTEM_PROMPT,      buildPrompt: (i) => reportGen.buildUserPrompt(i as never),                        contentType: 'ANALYTICS_REPORT' },
+  seo_assistant:        { system: SEO_SYSTEM_PROMPT,             buildPrompt: (i) => buildSeoUserPrompt(i as never),                              contentType: 'SEO_BRIEF' },
+  off_page_seo:         { system: offPageSeo.SYSTEM_PROMPT,      buildPrompt: (i) => offPageSeo.buildUserPrompt(i as never),                      contentType: 'SEO_BRIEF' },
+  technical_seo:        { system: technicalSeo.SYSTEM_PROMPT,    buildPrompt: (i) => technicalSeo.buildUserPrompt(i as never),                    contentType: 'SEO_BRIEF' },
+  local_seo:            { system: localSeo.SYSTEM_PROMPT,        buildPrompt: (i) => localSeo.buildUserPrompt(i as never),                        contentType: 'SEO_BRIEF' },
+  ecommerce_seo:        { system: ecommerceSeo.SYSTEM_PROMPT,    buildPrompt: (i) => ecommerceSeo.buildUserPrompt(i as never),                    contentType: 'SEO_BRIEF' },
+  voice_search_seo:     { system: voiceSearchSeo.SYSTEM_PROMPT,  buildPrompt: (i) => voiceSearchSeo.buildUserPrompt(i as never),                  contentType: 'SEO_BRIEF' },
+  image_seo:            { system: imageSeo.SYSTEM_PROMPT,        buildPrompt: (i) => imageSeo.buildUserPrompt(i as never),                        contentType: 'SEO_BRIEF' },
+  mobile_seo:           { system: mobileSeo.SYSTEM_PROMPT,       buildPrompt: (i) => mobileSeo.buildUserPrompt(i as never),                       contentType: 'SEO_BRIEF' },
+  international_seo:    { system: internationalSeo.SYSTEM_PROMPT, buildPrompt: (i) => internationalSeo.buildUserPrompt(i as never),                contentType: 'SEO_BRIEF' },
+  white_hat_checker:    { system: whiteHatChecker.SYSTEM_PROMPT, buildPrompt: (i) => whiteHatChecker.buildUserPrompt(i as never),                  contentType: 'SEO_BRIEF' },
 }
 
 export const listTools = async (_req: Request, res: Response) => {

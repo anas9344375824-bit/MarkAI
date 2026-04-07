@@ -55,6 +55,16 @@ export const TOOL_CREDITS: Record<string, number> = {
   brand_voice_trainer: 15,
   content_calendar: 20,
   report_generator: 10,
+  seo_assistant: 5,
+  off_page_seo: 8,
+  technical_seo: 8,
+  local_seo: 6,
+  ecommerce_seo: 6,
+  voice_search_seo: 5,
+  image_seo: 3,
+  mobile_seo: 5,
+  international_seo: 8,
+  white_hat_checker: 5,
 }
 
 export const PLAN_CREDITS: Record<Plan, number> = {
