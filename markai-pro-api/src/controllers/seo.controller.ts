@@ -22,8 +22,8 @@ const isHaramRequest = (message: string): boolean => {
 }
 
 // GET /api/seo/start — returns welcome message
-export const getSeoStartMessage = (_req: Request, res: Response) => {
-  return success(res, { message: SEO_START_MESSAGE })
+export const getSeoStartMessage = (_req: Request, res: Response): void => {
+  success(res, { message: SEO_START_MESSAGE })
 }
 
 // POST /api/seo/chat — main SEO chat with history
@@ -98,6 +98,6 @@ export const seoChat = async (req: Request, res: Response, next: NextFunction) =
       usage: { tokens, latencyMs },
     })
   } catch (err: any) {
-    return next(new AppError(500, ErrorCodes.INTERNAL_ERROR, err.message))
+    return next(new AppError(500, ErrorCodes.AI_PROVIDER_ERROR, err.message))
   }
 }
