@@ -1,30 +1,15 @@
-import { openai } from '../../config/openai'
-import { anthropic } from '../../config/anthropic'
+import { openrouter, CATEGORY_MODELS } from '../../config/openrouter'
 import { env } from '../../config/env'
 import { AIGenerationResult } from '../../types/ai.types'
 
-export const generateCompletion = async (
+const tryModel = async (
+  model: string,
   system: string,
   user: string,
-  options: { model?: string; maxTokens?: number; jsonMode?: boolean } = {}
+  options: { maxTokens?: number; jsonMode?: boolean }
 ): Promise<AIGenerationResult> => {
   const start = Date.now()
-  const model = options.model ?? env.OPENAI_MODEL_PRIMARY
-
-  if (env.AI_PROVIDER === 'anthropic' || (env.AI_PROVIDER === 'auto' && model.startsWith('claude'))) {
-    return generateAnthropic(system, user, options, start)
-  }
-  return generateOpenAI(system, user, options, start, model)
-}
-
-const generateOpenAI = async (
-  system: string,
-  user: string,
-  options: { maxTokens?: number; jsonMode?: boolean },
-  start: number,
-  model: string
-): Promise<AIGenerationResult> => {
-  const response = await openai.chat.completions.create({
+  const response = await openrouter.chat.completions.create({
     model,
     messages: [
       { role: 'system', content: system },
@@ -33,10 +18,8 @@ const generateOpenAI = async (
     max_tokens: options.maxTokens ?? 4096,
     ...(options.jsonMode ? { response_format: { type: 'json_object' } } : {}),
   })
-
-  const content = response.choices[0]?.message?.content ?? ''
   return {
-    content,
+    content: response.choices[0]?.message?.content ?? '',
     inputTokens: response.usage?.prompt_tokens ?? 0,
     outputTokens: response.usage?.completion_tokens ?? 0,
     model,
@@ -44,46 +27,55 @@ const generateOpenAI = async (
   }
 }
 
-const generateAnthropic = async (
+export const generateCompletion = async (
   system: string,
   user: string,
-  options: { maxTokens?: number },
-  start: number
+  options: { category?: string; maxTokens?: number; jsonMode?: boolean } = {}
 ): Promise<AIGenerationResult> => {
-  const response = await anthropic.messages.create({
-    model: env.ANTHROPIC_MODEL,
-    system,
-    messages: [{ role: 'user', content: user }],
-    max_tokens: options.maxTokens ?? 4096,
-  })
+  const models = CATEGORY_MODELS[options.category ?? 'default'] ?? CATEGORY_MODELS.default
 
-  const content = response.content[0]?.type === 'text' ? response.content[0].text : ''
-  return {
-    content,
-    inputTokens: response.usage.input_tokens,
-    outputTokens: response.usage.output_tokens,
-    model: env.ANTHROPIC_MODEL,
-    latencyMs: Date.now() - start,
+  for (const model of models) {
+    try {
+      const result = await tryModel(model, system, user, options)
+      if (result.content) {
+        console.log(`✅ AI [${model}] responded (${result.latencyMs}ms)`)
+        return result
+      }
+    } catch (err: any) {
+      console.warn(`⚠️ Model [${model}] failed: ${err?.message} — trying next...`)
+    }
   }
+
+  throw new Error('All AI models failed. Please try again later.')
 }
 
 export const streamCompletion = async function* (
   system: string,
   user: string,
-  model?: string
+  category?: string
 ): AsyncGenerator<string> {
-  const stream = await openai.chat.completions.create({
-    model: model ?? env.OPENAI_MODEL_PRIMARY,
-    messages: [
-      { role: 'system', content: system },
-      { role: 'user', content: user },
-    ],
-    stream: true,
-    max_tokens: 4096,
-  })
+  const models = CATEGORY_MODELS[category ?? 'default'] ?? CATEGORY_MODELS.default
 
-  for await (const chunk of stream) {
-    const delta = chunk.choices[0]?.delta?.content
-    if (delta) yield delta
+  for (const model of models) {
+    try {
+      const stream = await openrouter.chat.completions.create({
+        model,
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: user },
+        ],
+        stream: true,
+        max_tokens: 4096,
+      })
+      for await (const chunk of stream) {
+        const delta = chunk.choices[0]?.delta?.content
+        if (delta) yield delta
+      }
+      return
+    } catch (err: any) {
+      console.warn(`⚠️ Stream model [${model}] failed: ${err?.message} — trying next...`)
+    }
   }
+
+  throw new Error('All AI stream models failed. Please try again later.')
 }

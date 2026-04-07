@@ -22,12 +22,13 @@ const envSchema = z.object({
 
   REDIS_URL: z.string().default('redis://localhost:6379'),
 
-  OPENAI_API_KEY: z.string().min(1),
+  OPENROUTER_API_KEY: z.string().min(1),
+  OPENAI_API_KEY: z.string().optional(),
   OPENAI_MODEL_PRIMARY: z.string().default('gpt-4o'),
   OPENAI_MODEL_FAST: z.string().default('gpt-4o-mini'),
   ANTHROPIC_API_KEY: z.string().optional(),
   ANTHROPIC_MODEL: z.string().default('claude-sonnet-4-5'),
-  AI_PROVIDER: z.enum(['openai', 'anthropic', 'auto']).default('openai'),
+  AI_PROVIDER: z.enum(['openrouter', 'openai', 'anthropic', 'auto']).default('openrouter'),
   AI_FALLBACK_ENABLED: z.coerce.boolean().default(true),
   AI_TIMEOUT_MS: z.coerce.number().default(30000),
 

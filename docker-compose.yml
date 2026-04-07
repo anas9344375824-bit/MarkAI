@@ -1,11 +1,9 @@
-version: '3.9'
-
 services:
   frontend:
     build:
       context: ./markai-pro
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - api
 
@@ -16,11 +14,36 @@ services:
       - "3000:3000"
     env_file:
       - ./markai-pro-api/.env
+    environment:
+      - DATABASE_URL=postgresql://markai:markai123@postgres:5432/markaipro
+      - REDIS_URL=redis://redis:6379
     depends_on:
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     command: sh -c "npx prisma migrate deploy && node dist/index.js"
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: markai
+      POSTGRES_PASSWORD: markai123
+      POSTGRES_DB: markaipro
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U markai -d markaipro"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+
+volumes:
+  postgres_data:
