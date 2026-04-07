@@ -29,6 +29,7 @@ import * as funnel from '../services/ai/tools/funnelPlanner'
 import * as bvTrainer from '../services/ai/tools/brandVoiceTrainer'
 import * as calendar from '../services/ai/tools/contentCalendar'
 import * as reportGen from '../services/ai/tools/reportGenerator'
+import { SEO_SYSTEM_PROMPT, buildSeoUserPrompt } from '../prompts/seo.prompt'
 import { ContentType, Platform } from '@prisma/client'
 
 const TOOL_REGISTRY: Record<string, {
@@ -56,6 +57,7 @@ const TOOL_REGISTRY: Record<string, {
   brand_voice_trainer: { system: bvTrainer.SYSTEM_PROMPT, buildPrompt: (i) => bvTrainer.buildUserPrompt(i as never), contentType: 'BRAND_VOICE_PROFILE' },
   content_calendar: { system: calendar.SYSTEM_PROMPT, buildPrompt: (i, bv) => calendar.buildUserPrompt(i as never, bv as never), contentType: 'CONTENT_CALENDAR' },
   report_generator: { system: reportGen.SYSTEM_PROMPT, buildPrompt: (i) => reportGen.buildUserPrompt(i as never), contentType: 'ANALYTICS_REPORT' },
+  seo_assistant: { system: SEO_SYSTEM_PROMPT, buildPrompt: (i) => buildSeoUserPrompt(i as never), contentType: 'SEO_BRIEF' },
 }
 
 export const listTools = async (_req: Request, res: Response) => {
