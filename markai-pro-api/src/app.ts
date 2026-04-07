@@ -16,6 +16,7 @@ import clientsRoutes from './routes/clients.routes'
 import billingRoutes from './routes/billing.routes'
 import webhookRoutes from './routes/webhooks.routes'
 import onboardingRoutes from './routes/onboarding.routes'
+import seoRoutes from './routes/seo.routes'
 
 const app = express()
 
@@ -61,6 +62,7 @@ app.use('/api/competitors', competitorsRoutes)
 app.use('/api/clients', clientsRoutes)
 app.use('/api/billing', billingRoutes)
 app.use('/api/onboarding', onboardingRoutes)
+app.use('/api/seo', seoRoutes)
 
 // 404
 app.use((_req, res) => res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } }))
